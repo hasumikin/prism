@@ -651,7 +651,8 @@ parse_input(pm_string_t *input, const pm_options_t *options) {
  *       prism (which you can trigger with `nil` or `"latest"`). If you want to
  *       parse exactly as CRuby 3.3.0 would, then you can pass `"3.3.0"`.
  * * `scopes` - the locals that are in scope surrounding the code that is being
- *       parsed. This should be an array of arrays of symbols or nil.
+ *       parsed. This should be an array of arrays of symbols or nil. Scopes are
+ *       ordered from the outermost scope to the innermost one.
  */
 static VALUE
 parse(int argc, VALUE *argv, VALUE self) {
@@ -984,6 +985,36 @@ inspect_node(VALUE self, VALUE source) {
     return string;
 }
 
+/**
+ * call-seq:
+ *   Debug::format_errors(source) -> String
+ *
+ * Format the errors that are found when parsing the given source string.
+ */
+static VALUE
+format_errors(VALUE self, VALUE source) {
+    pm_string_t input;
+    input_load_string(&input, source);
+
+    pm_parser_t parser;
+    pm_parser_init(&parser, pm_string_source(&input), pm_string_length(&input), NULL);
+
+    pm_node_t *node = pm_parse(&parser);
+    pm_buffer_t buffer = { 0 };
+
+    pm_parser_errors_format(&parser, &buffer, true);
+
+    rb_encoding *encoding = rb_enc_find(parser.encoding->name);
+    VALUE result = rb_enc_str_new(pm_buffer_value(&buffer), pm_buffer_length(&buffer), encoding);
+
+    pm_buffer_free(&buffer);
+    pm_node_destroy(&parser, node);
+    pm_parser_free(&parser);
+    pm_string_free(&input);
+
+    return result;
+}
+
 /******************************************************************************/
 /* Initialization of the extension                                            */
 /******************************************************************************/
@@ -1062,6 +1093,7 @@ Init_prism(void) {
     rb_define_singleton_method(rb_cPrismDebug, "memsize", memsize, 1);
     rb_define_singleton_method(rb_cPrismDebug, "profile_file", profile_file, 1);
     rb_define_singleton_method(rb_cPrismDebug, "inspect_node", inspect_node, 1);
+    rb_define_singleton_method(rb_cPrismDebug, "format_errors", format_errors, 1);
 
     // Next, initialize the other APIs.
     Init_prism_api_node();
