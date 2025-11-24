@@ -161,7 +161,7 @@ pm_options_freeze_set(pm_options_t *options, bool freeze) {
 PRISM_EXPORTED_FUNCTION bool
 pm_options_scopes_init(pm_options_t *options, size_t scopes_count) {
     options->scopes_count = scopes_count;
-    options->scopes = xcalloc(scopes_count, sizeof(pm_options_scope_t));
+    options->scopes = (pm_options_scope_t *)xcalloc(scopes_count, sizeof(pm_options_scope_t));
     return options->scopes != NULL;
 }
 
@@ -180,7 +180,7 @@ pm_options_scope_get(const pm_options_t *options, size_t index) {
 PRISM_EXPORTED_FUNCTION bool
 pm_options_scope_init(pm_options_scope_t *scope, size_t locals_count) {
     scope->locals_count = locals_count;
-    scope->locals = xcalloc(locals_count, sizeof(pm_string_t));
+    scope->locals = (pm_string_t *)xcalloc(locals_count, sizeof(pm_string_t));
     scope->forwarding = PM_OPTIONS_SCOPE_FORWARDING_NONE;
     return scope->locals != NULL;
 }

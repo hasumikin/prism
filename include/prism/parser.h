@@ -254,6 +254,13 @@ typedef struct pm_lex_mode {
     struct pm_lex_mode *prev;
 } pm_lex_mode_t;
 
+#ifdef __cplusplus
+#define PM_LEX_LIST pm_lex_mode_t::PM_LEX_LIST
+#define PM_LEX_REGEXP pm_lex_mode_t::PM_LEX_REGEXP
+#define PM_LEX_STRING pm_lex_mode_t::PM_LEX_STRING
+#define PM_LEX_DEFAULT pm_lex_mode_t::PM_LEX_DEFAULT
+#endif
+
 /**
  * We pre-allocate a certain number of lex states in order to avoid having to
  * call malloc too many times while parsing. You really shouldn't need more than

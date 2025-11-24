@@ -763,7 +763,7 @@ pm_locals_resize(pm_locals_t *locals) {
     uint32_t next_capacity = locals->capacity == 0 ? 4 : (locals->capacity * 2);
     assert(next_capacity > locals->capacity);
 
-    pm_local_t *next_locals = xcalloc(next_capacity, sizeof(pm_local_t));
+    pm_local_t *next_locals = (pm_local_t *)xcalloc(next_capacity, sizeof(pm_local_t));
     if (next_locals == NULL) abort();
 
     if (next_capacity < PM_LOCALS_HASH_THRESHOLD) {
