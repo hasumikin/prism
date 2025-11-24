@@ -28,7 +28,7 @@ pm_memchr(const void *memory, int character, size_t number, bool encoding_change
 
         return NULL;
     } else {
-        return memchr(memory, character, number);
+        return (void *) memchr(memory, character, number);
     }
 }
 

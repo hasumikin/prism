@@ -28,6 +28,25 @@
 #endif
 
 /**
+ * The type of the string. This field determines how the string should be freed.
+ */
+typedef enum pm_string_type_enum {
+    /** This string is a constant string, and should not be freed. */
+    PM_STRING_CONSTANT,
+
+    /** This is a slice of another string, and should not be freed. */
+    PM_STRING_SHARED,
+
+    /** This string owns its memory, and should be freed using `pm_string_free()`. */
+    PM_STRING_OWNED,
+
+#ifdef PRISM_HAS_MMAP
+    /** This string is a memory-mapped file, and should be freed using `pm_string_free()`. */
+    PM_STRING_MAPPED
+#endif
+} pm_string_type_t;
+
+/**
  * A generic string type that can have various ownership semantics.
  */
 typedef struct {
@@ -38,21 +57,7 @@ typedef struct {
     size_t length;
 
     /** The type of the string. This field determines how the string should be freed. */
-    enum {
-        /** This string is a constant string, and should not be freed. */
-        PM_STRING_CONSTANT,
-
-        /** This is a slice of another string, and should not be freed. */
-        PM_STRING_SHARED,
-
-        /** This string owns its memory, and should be freed using `pm_string_free()`. */
-        PM_STRING_OWNED,
-
-#ifdef PRISM_HAS_MMAP
-        /** This string is a memory-mapped file, and should be freed using `pm_string_free()`. */
-        PM_STRING_MAPPED
-#endif
-    } type;
+    pm_string_type_t type;
 } pm_string_t;
 
 /**
@@ -67,7 +72,7 @@ PRISM_EXPORTED_FUNCTION size_t pm_string_sizeof(void);
  * Defines an empty string. This is useful for initializing a string that will
  * be filled in later.
  */
-#define PM_STRING_EMPTY ((pm_string_t) { .type = PM_STRING_CONSTANT, .source = NULL, .length = 0 })
+#define PM_STRING_EMPTY PM_COMPOUND_LITERAL(pm_string_t, .type = PM_STRING_CONSTANT, .source = NULL, .length = 0)
 
 /**
  * Initialize a shared string that is based on initial input.

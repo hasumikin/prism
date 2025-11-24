@@ -160,7 +160,7 @@ pm_node_hash_insert(pm_node_hash_t *hash, const pm_static_literals_metadata_t *m
     if (hash->size * 2 >= hash->capacity) {
         // First, allocate space for the new node list.
         uint32_t new_capacity = hash->capacity == 0 ? 4 : hash->capacity * 2;
-        pm_node_t **new_nodes = xcalloc(new_capacity, sizeof(pm_node_t *));
+        pm_node_t **new_nodes = (pm_node_t **) xcalloc(new_capacity, sizeof(pm_node_t *));
         if (new_nodes == NULL) return NULL;
 
         // It turns out to be more efficient to mask the hash value than to use

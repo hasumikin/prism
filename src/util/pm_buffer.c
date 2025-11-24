@@ -60,7 +60,7 @@ pm_buffer_append_length(pm_buffer_t *buffer, size_t length) {
             buffer->capacity *= 2;
         }
 
-        buffer->value = xrealloc(buffer->value, buffer->capacity);
+        buffer->value = (char *) xrealloc(buffer->value, buffer->capacity);
         if (buffer->value == NULL) return false;
     }
 
@@ -328,7 +328,7 @@ pm_buffer_rstrip(pm_buffer_t *buffer) {
  */
 size_t
 pm_buffer_index(const pm_buffer_t *buffer, char value) {
-    const char *first = memchr(buffer->value, value, buffer->length);
+    const char *first = (const char *) memchr(buffer->value, value, buffer->length);
     return (first == NULL) ? SIZE_MAX : (size_t) (first - buffer->value);
 }
 

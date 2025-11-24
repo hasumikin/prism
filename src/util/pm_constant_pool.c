@@ -16,7 +16,7 @@ pm_constant_id_list_init(pm_constant_id_list_t *list) {
 void
 pm_constant_id_list_init_capacity(pm_constant_id_list_t *list, size_t capacity) {
     if (capacity) {
-        list->ids = xcalloc(capacity, sizeof(pm_constant_id_t));
+        list->ids = (pm_constant_id_t *) xcalloc(capacity, sizeof(pm_constant_id_t));
         if (list->ids == NULL) abort();
     } else {
         list->ids = NULL;
@@ -134,8 +134,8 @@ pm_constant_pool_resize(pm_constant_pool_t *pool) {
     void *next = xcalloc(next_capacity, element_size);
     if (next == NULL) return false;
 
-    pm_constant_pool_bucket_t *next_buckets = next;
-    pm_constant_t *next_constants = (void *)(((char *) next) + next_capacity * sizeof(pm_constant_pool_bucket_t));
+    pm_constant_pool_bucket_t *next_buckets = (pm_constant_pool_bucket_t *) next;
+    pm_constant_t *next_constants = (pm_constant_t *)(((char *) next) + next_capacity * sizeof(pm_constant_pool_bucket_t));
 
     // For each bucket in the current constant pool, find the index in the
     // next constant pool, and insert it.
@@ -185,8 +185,8 @@ pm_constant_pool_init(pm_constant_pool_t *pool, uint32_t capacity) {
     void *memory = xcalloc(capacity, element_size);
     if (memory == NULL) return false;
 
-    pool->buckets = memory;
-    pool->constants = (void *)(((char *)memory) + capacity * sizeof(pm_constant_pool_bucket_t));
+    pool->buckets = (pm_constant_pool_bucket_t *) memory;
+    pool->constants = (pm_constant_t *)(((char *)memory) + capacity * sizeof(pm_constant_pool_bucket_t));
     pool->size = 0;
     pool->capacity = capacity;
     return true;

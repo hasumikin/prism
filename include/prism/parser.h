@@ -100,6 +100,47 @@ typedef struct {
 } pm_heredoc_lex_mode_t;
 
 /**
+ * The type of lex mode that the lexer is currently in.
+ */
+typedef enum pm_lex_mode_enum {
+    /** This state is used when any given token is being lexed. */
+    PM_LEX_DEFAULT,
+
+    /**
+     * This state is used when we're lexing as normal but inside an embedded
+     * expression of a string.
+     */
+    PM_LEX_EMBEXPR,
+
+    /**
+     * This state is used when we're lexing a variable that is embedded
+     * directly inside of a string with the # shorthand.
+     */
+    PM_LEX_EMBVAR,
+
+    /** This state is used when you are inside the content of a heredoc. */
+    PM_LEX_HEREDOC,
+
+    /**
+     * This state is used when we are lexing a list of tokens, as in a %w
+     * word list literal or a %i symbol list literal.
+     */
+    PM_LEX_LIST,
+
+    /**
+     * This state is used when a regular expression has been begun and we
+     * are looking for the terminator.
+     */
+    PM_LEX_REGEXP,
+
+    /**
+     * This state is used when we are lexing a string or a string-like
+     * token, as in string content with either quote or an xstring.
+     */
+    PM_LEX_STRING
+} pm_lex_mode_type_t;
+
+/**
  * When lexing Ruby source, the lexer has a small amount of state to tell which
  * kind of token it is currently lexing. For example, when we find the start of
  * a string, the first token that we return is a TOKEN_STRING_BEGIN token. After
@@ -108,43 +149,7 @@ typedef struct {
  */
 typedef struct pm_lex_mode {
     /** The type of this lex mode. */
-    enum {
-        /** This state is used when any given token is being lexed. */
-        PM_LEX_DEFAULT,
-
-        /**
-         * This state is used when we're lexing as normal but inside an embedded
-         * expression of a string.
-         */
-        PM_LEX_EMBEXPR,
-
-        /**
-         * This state is used when we're lexing a variable that is embedded
-         * directly inside of a string with the # shorthand.
-         */
-        PM_LEX_EMBVAR,
-
-        /** This state is used when you are inside the content of a heredoc. */
-        PM_LEX_HEREDOC,
-
-        /**
-         * This state is used when we are lexing a list of tokens, as in a %w
-         * word list literal or a %i symbol list literal.
-         */
-        PM_LEX_LIST,
-
-        /**
-         * This state is used when a regular expression has been begun and we
-         * are looking for the terminator.
-         */
-        PM_LEX_REGEXP,
-
-        /**
-         * This state is used when we are lexing a string or a string-like
-         * token, as in string content with either quote or an xstring.
-         */
-        PM_LEX_STRING
-    } mode;
+    pm_lex_mode_type_t mode;
 
     /** The data associated with this type of lex mode. */
     union {
@@ -253,13 +258,6 @@ typedef struct pm_lex_mode {
     /** The previous lex state so that it knows how to pop. */
     struct pm_lex_mode *prev;
 } pm_lex_mode_t;
-
-#ifdef __cplusplus
-#define PM_LEX_LIST pm_lex_mode_t::PM_LEX_LIST
-#define PM_LEX_REGEXP pm_lex_mode_t::PM_LEX_REGEXP
-#define PM_LEX_STRING pm_lex_mode_t::PM_LEX_STRING
-#define PM_LEX_DEFAULT pm_lex_mode_t::PM_LEX_DEFAULT
-#endif
 
 /**
  * We pre-allocate a certain number of lex states in order to avoid having to

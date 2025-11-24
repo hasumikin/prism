@@ -11,7 +11,14 @@ FUZZ_OUTPUT_DIR = $(CURDIR)/fuzz/output
 SOEXT ?= $(shell ruby -e 'puts RbConfig::CONFIG["SOEXT"]')
 
 CPPFLAGS := -Iinclude $(CPPFLAGS)
-CFLAGS := -g -O2 -std=c99 -Wall -Werror -Wextra -Wpedantic -Wundef -Wconversion -Wno-missing-braces -fPIC -fvisibility=hidden -Wimplicit-fallthrough $(CFLAGS)
+
+# Detect C++ compiler and adjust flags
+ifeq ($(findstring ++,$(CC)),++)
+    CFLAGS := -g -O2 -Wall -Wextra -Wpedantic -Wundef -Wconversion -Wno-missing-braces -fPIC -fvisibility=hidden -Wimplicit-fallthrough $(CFLAGS)
+else
+    CFLAGS := -g -O2 -Wall -Werror -Wextra -Wpedantic -Wundef -Wconversion -Wno-missing-braces -fPIC -fvisibility=hidden -Wimplicit-fallthrough $(CFLAGS)
+endif
+
 JAVA_WASM_CFLAGS := -g -Oz -std=c99 -Wall -Werror -Wextra -Wpedantic -Wundef -Wconversion -Wno-missing-braces -fPIC -fvisibility=hidden -Wimplicit-fallthrough $(JAVA_WASM_CFLAGS)
 CC ?= cc
 AR ?= ar

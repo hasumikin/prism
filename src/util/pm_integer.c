@@ -448,7 +448,7 @@ pm_integer_parse_decimal(pm_integer_t *integer, const uint8_t *digits, size_t di
 static void
 pm_integer_parse_big(pm_integer_t *integer, uint32_t multiplier, const uint8_t *start, const uint8_t *end) {
     // Allocate an array to store digits.
-    uint8_t *digits = xmalloc(sizeof(uint8_t) * (size_t) (end - start));
+    uint8_t *digits = (uint8_t *) xmalloc(sizeof(uint8_t) * (size_t) (end - start));
     size_t digits_length = 0;
 
     for (; start < end; start++) {
@@ -636,7 +636,7 @@ pm_integer_string(pm_buffer_t *buffer, const pm_integer_t *integer) {
 
     // Allocate a buffer that we'll copy the decimal digits into.
     size_t digits_length = converted.length * 9;
-    char *digits = xcalloc(digits_length, sizeof(char));
+    char *digits = (char *) xcalloc(digits_length, sizeof(char));
     if (digits == NULL) return;
 
     // Pack bigdecimal to digits.

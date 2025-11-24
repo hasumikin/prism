@@ -257,4 +257,11 @@
     #define PRISM_FALLTHROUGH
 #endif
 
+/**
+ * C++ compatibility layer.
+ * This header provides macros and definitions to allow C99 code to compile
+ * with C++ compilers (e.g., em++, g++, clang++).
+ */
+#include "prism/cpp_compat.h"
+
 #endif

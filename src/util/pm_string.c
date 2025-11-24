@@ -187,7 +187,7 @@ pm_string_mapped_init(pm_string_t *string, const char *filepath) {
         return PM_STRING_INIT_SUCCESS;
     }
 
-    source = mmap(NULL, size, PROT_READ, MAP_PRIVATE, fd, 0);
+    source = (uint8_t *) mmap(NULL, size, PROT_READ, MAP_PRIVATE, fd, 0);
     if (source == MAP_FAILED) {
         close(fd);
         return PM_STRING_INIT_ERROR_GENERIC;
@@ -230,7 +230,7 @@ pm_string_file_init(pm_string_t *string, const char *filepath) {
     }
 
     // Create a buffer to read the file into.
-    uint8_t *source = xmalloc(file_size);
+    uint8_t *source = (uint8_t *) xmalloc(file_size);
     if (source == NULL) {
         pm_string_file_handle_close(&handle);
         return PM_STRING_INIT_ERROR_GENERIC;
@@ -282,7 +282,7 @@ pm_string_file_init(pm_string_t *string, const char *filepath) {
     }
 
     size_t length = (size_t) size;
-    uint8_t *source = xmalloc(length);
+    uint8_t *source = (uint8_t *) xmalloc(length);
     if (source == NULL) {
         close(fd);
         return PM_STRING_INIT_ERROR_GENERIC;
@@ -317,7 +317,7 @@ pm_string_ensure_owned(pm_string_t *string) {
     size_t length = pm_string_length(string);
     const uint8_t *source = pm_string_source(string);
 
-    uint8_t *memory = xmalloc(length);
+    uint8_t *memory = (uint8_t *) xmalloc(length);
     if (!memory) return;
 
     pm_string_owned_init(string, memory, length);
